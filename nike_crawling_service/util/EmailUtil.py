@@ -29,20 +29,13 @@ class EmailUtil:
         lines = []
 
         for item in result:
-            name = item['name']
-            link = item['link']
-            price = item['price']
-            date = item['date']
-
-            inner = ""
-            inner += f"<h3>{name}</h3>"
-            inner += f"Price : {price}"
-            inner += f"</br>"
-            inner += f"Date : {date}"
-            inner += f"</br>"
-            inner += f"<a href='{link}'>Link로 이동</a>"
-
-            lines.append(inner)
+            line = [f"<h3>{item['name']}</h3>",
+                    f"Price : {item['price']}",
+                    f"</br>",
+                    f"Date : {item['date']}",
+                    f"</br>",
+                    f"<a href='{item['link']}'>Link로 이동</a>"]
+            lines.append("".join(line))
 
         return f'''
         <html>

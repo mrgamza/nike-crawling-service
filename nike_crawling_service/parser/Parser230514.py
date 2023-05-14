@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup
+from nike_crawling_service.util import DateUtil
 from nike_crawling_service.util import HTMLUtil
 from nike_crawling_service.util import Properties
 from datetime import datetime
@@ -25,15 +26,16 @@ class Parser230514:
                 continue
 
             try:
-                inner = BeautifulSoup(draw_pdp['response'], 'html.parser').find('div', attrs={
-                    'class': 'product-info ncss-col-sm-12 full'})
+                soup = BeautifulSoup(draw_pdp['response'], 'html.parser')
+                inner = soup.find('div', attrs={'class': 'product-info ncss-col-sm-12 full'})
+
                 name = inner.find('h1', attrs={'class': 'headline-5 pb3-sm'}).text
                 description = inner.find('h2', attrs={'class': 'headline-1 pb3-sm'}).text
                 price = inner.find('div', attrs={'headline-5 pb6-sm fs14-sm fs16-md'}).text
                 date_time = inner.find('div', attrs={'available-date-component'})
 
-                is_same_date = (not same_date_only) or self.__is_same_date(today, date_time)
-                is_same_time = (not same_time_only) or self.__is_same_time(today, date_time)
+                is_same_date = (not same_date_only) or DateUtil.is_same_date(today, date_time)
+                is_same_time = (not same_time_only) or DateUtil.is_same_time(today, date_time)
 
                 append = is_same_date and is_same_time
                 if append is False:
@@ -45,7 +47,7 @@ class Parser230514:
                     'date': self.__get_datetime(date_time.text)
                 })
             except Exception as exception:
-                print(exception)
+                raise exception
         return results
 
     # noinspection PyMethodMayBeStatic
@@ -76,11 +78,3 @@ class Parser230514:
         date_time_obj = datetime.strptime(date_str, '%m/%d %p %I:%M')
         date_time_obj = date_time_obj.replace(year=datetime.now().year)
         return date_time_obj
-
-    # noinspection PyMethodMayBeStatic
-    def __is_same_date(self, current, target):
-        return current.year == target.year and current.month == target.month and current.day == target.day
-
-    # noinspection PyMethodMayBeStatic
-    def __is_same_time(self, current, target):
-        return current.hour == target.hour and current.minute == target.minute
