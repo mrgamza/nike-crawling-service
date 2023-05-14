@@ -9,3 +9,26 @@ EMAIL_PASSWORD={Your Email password}
 EMAIL_USERNAME={Email send user name}
 ADMIN_ID={Admin Email}
 ```
+
+# Using JOB
+```commandline
+python3 manage.py start --recipients {email1,email2}
+```
+
+# Using Server
+Run django servce
+```commandline
+python manage.py runserver
+```
+
+# Call API
+| Method | Endpoint                         |   Param   | Description |
+|:------:|----------------------------------|:---------:|:-----------:|
+|  Get   | http://localhost:8000            |  Welcome  |             |
+|  Get   | http://localhost:8000/job        | Call List |             |
+
+# Example
+- http://localhost:8000/job/?recipients={YourEmail}&parsing_option=date,time
+- http://localhost:8000/job/?recipients={YourEmail}&parsing_option=date
+- http://localhost:8000/job/?recipients={YourEmail}&parsing_option=time
+- http://localhost:8000/job/?recipients={YourEmail}&parsing_option=none
