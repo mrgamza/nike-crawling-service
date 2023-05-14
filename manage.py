@@ -5,11 +5,9 @@ import sys
 import requests
 
 from apscheduler.schedulers.background import BackgroundScheduler
-from datetime import datetime
 
 
 def job():
-    # requests.get("https://snkrs-crawling.herokuapp.com/job")
     requests.get("http://127.0.0.1:8000/job")
 
     
