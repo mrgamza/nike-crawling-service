@@ -16,12 +16,12 @@ python3 manage.py start --recipients {email1,email2}
 ```
 
 # Using Server
-Run django servce
+Run django server
 ```commandline
 python manage.py runserver
 ```
 
-# Call API
+# EndPoints
 | Method | Endpoint                         |   Param   | Description |
 |:------:|----------------------------------|:---------:|:-----------:|
 |  Get   | http://localhost:8000            |  Welcome  |             |
