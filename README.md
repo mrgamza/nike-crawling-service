@@ -32,3 +32,4 @@ python manage.py runserver
 - http://localhost:8000/job/?recipients={YourEmail}&parsing_option=date
 - http://localhost:8000/job/?recipients={YourEmail}&parsing_option=time
 - http://localhost:8000/job/?recipients={YourEmail}&parsing_option=none
+
