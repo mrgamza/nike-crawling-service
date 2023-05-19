@@ -21,10 +21,14 @@ def get_product(parsing_option, recipients):
             email_util.send_error_email(admin_email, "Response Error")
         else:
             result = Parser230514().parse(request, parsing_option)
-            recipients_split = recipients.split(',')
-            for recipient in recipients_split:
-                email_util.send_email_result(recipient, result)
-            return json.dumps({'data': result}, default=str)
+            if recipients != '':
+                recipients_split = recipients.split(',')
+                for recipient in recipients_split:
+                    email_util.send_email_result(recipient, result)
+            return json.dumps({'recipients': recipients,
+                               'parsing_option': parsing_option,
+                               'data': result},
+                              default=str)
     except (Exception,):
         email_util.send_error_email(admin_email, traceback.format_exc())
     return json.dumps({'data': 'Error'})

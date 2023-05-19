@@ -7,7 +7,7 @@ def hello(request):
 
 
 def job(request):
-    parsing_option = request.GET.get('parsing_option', 'date,time')
+    parsing_option = request.GET.get('parsing_option', '')
     recipients = request.GET.get('recipients', '')
     result = CrawlingController.get_product(parsing_option, recipients)
     return HttpResponse(result, content_type='application/json; charset=utf-8')
