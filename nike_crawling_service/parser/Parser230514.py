@@ -2,16 +2,15 @@ from bs4 import BeautifulSoup
 from nike_crawling_service.util import DateUtil
 from nike_crawling_service.util import HTMLUtil
 from nike_crawling_service.util import Properties
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 
 __all__ = ['Parser230514']
 
 
 class Parser230514:
-    def parse(self, html, parsing_option):
-        same_date_only = parsing_option.find('date') > -1
-        same_time_only = parsing_option.find('time') > -1
-        today = datetime.today()
+    def parse(self, html, year, month, day):
+        timezone_kst = timezone(timedelta(hours=9))
+        request_datetime_kst = datetime(int(year), int(month), int(day), 0, 0, 0, 0, tzinfo=timezone_kst)
 
         html_text = html.text
         find = BeautifulSoup(html_text, 'html.parser').find('div', attrs={'data-qa': 'feed-container'})
@@ -32,19 +31,18 @@ class Parser230514:
                 name = inner.find('h1', attrs={'class': 'headline-5 pb3-sm'}).text
                 description = inner.find('h2', attrs={'class': 'headline-1 pb3-sm'}).text
                 price = inner.find('div', attrs={'headline-5 pb6-sm fs14-sm fs16-md'}).text
-                date_time = inner.find('div', attrs={'available-date-component'})
+                date_time_html = inner.find('div', attrs={'available-date-component'})
 
-                is_same_date = (not same_date_only) or DateUtil.is_same_date(today, date_time)
-                is_same_time = (not same_time_only) or DateUtil.is_same_time(today, date_time)
+                date_time = self.__get_datetime(date_time_html.text)
 
-                append = is_same_date and is_same_time
-                if append is False:
+                is_same_date = DateUtil.is_same_date(request_datetime_kst, date_time)
+                if is_same_date is False:
                     continue
                 results.append({
                     'name': f'{name} - {description}',
                     'link': draw_pdp['link'],
                     'price': price,
-                    'date': self.__get_datetime(date_time.text)
+                    'date': date_time
                 })
             except Exception as exception:
                 raise exception

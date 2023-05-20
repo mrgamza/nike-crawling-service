@@ -14,19 +14,21 @@ admin_email = os.environ.get("ADMIN_ID")
 email_util = EmailUtil()
 
 
-def get_product(parsing_option, recipients):
+def get_product(year, month, day, recipients):
     try:
         request = HTMLUtil.get_html(Properties.crawlingUrl)
         if request is None:
             email_util.send_error_email(admin_email, "Response Error")
         else:
-            result = Parser230514().parse(request, parsing_option)
+            result = Parser230514().parse(request, year, month, day)
             if recipients != '':
                 recipients_split = recipients.split(',')
                 for recipient in recipients_split:
                     email_util.send_email_result(recipient, result)
             return json.dumps({'recipients': recipients,
-                               'parsing_option': parsing_option,
+                               'year': year,
+                               'month': month,
+                               'day': day,
                                'data': result},
                               default=str)
     except (Exception,):
