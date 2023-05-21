@@ -22,17 +22,23 @@ class EmailUtil:
     # noinspection PyMethodMayBeStatic
     def __make_success_plain(self, result):
         count = len(result)
-        return f'Crawling Success!!!\nCount : {count}'
+        draw_count = len(list(filter(lambda x: x['draw'] is True, result)))
+        normal_count = count - draw_count
+        return f'Count : Draw {draw_count}, Normal {normal_count}'
 
     # noinspection PyMethodMayBeStatic
     def __make_success_html(self, result):
         count = len(result)
+        draw_count = len(list(filter(lambda x: x['draw'] is True, result)))
+        normal_count = count - draw_count
         lines = []
         for item in result:
             line = [f"<h3>{item['name']}</h3>",
                     f"Price : {item['price']}",
                     f"</br>",
                     f"Date : {item['date']}",
+                    f"</br>",
+                    f"Draw : {item['draw']}",
                     f"</br>",
                     f"<a href='{item['link']}'>Link로 이동</a>"]
             lines.append("".join(line))
@@ -41,7 +47,7 @@ class EmailUtil:
         <html>
             <body>
                 <h2>Crawling Success!!!</h2>
-                <h4>Count : {count}
+                <h4>Count : Draw {draw_count}, Normal {normal_count}
                 </br>
                 <a href='{Properties.snkrUrl}'>SNKRS로 이동</a>
                 </br></br>

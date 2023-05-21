@@ -21,28 +21,31 @@ class Parser230514:
 
         for product in products:
             draw_pdp = self.__get_draw_pdp(product)
+
             if draw_pdp is None:
                 continue
+
+            is_draw = draw_pdp['draw']
 
             try:
                 soup = BeautifulSoup(draw_pdp['response'], 'html.parser')
                 inner = soup.find('div', attrs={'class': 'product-info ncss-col-sm-12 full'})
-
                 name = inner.find('h1', attrs={'class': 'headline-5 pb3-sm'}).text
                 description = inner.find('h2', attrs={'class': 'headline-1 pb3-sm'}).text
                 price = inner.find('div', attrs={'headline-5 pb6-sm fs14-sm fs16-md'}).text
                 date_time_html = inner.find('div', attrs={'available-date-component'})
-
                 date_time = self.__get_datetime(date_time_html.text)
-
                 is_same_date = DateUtil.is_same_date(request_datetime_kst, date_time)
+
                 if is_same_date is False:
                     continue
+
                 results.append({
                     'name': f'{name} - {description}',
                     'link': draw_pdp['link'],
                     'price': price,
-                    'date': date_time
+                    'date': date_time,
+                    "draw": draw_pdp['draw']
                 })
             except Exception as exception:
                 raise exception
@@ -58,13 +61,12 @@ class Parser230514:
         response = HTMLUtil.get_html(link)
         response_text = response.text
         find = response_text.find('Draw로 출시됩니다')
-        if find != -1:
-            return {
-                'response': response_text,
-                'link': link
-            }
-        else:
-            return None
+        is_draw = find != -1
+        return {
+            'response': response_text,
+            'link': link,
+            'draw': is_draw
+        }
 
     # noinspection PyMethodMayBeStatic
     def __get_datetime(self, date_text):
