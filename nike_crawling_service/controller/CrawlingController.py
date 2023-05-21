@@ -6,7 +6,9 @@ from dotenv import load_dotenv
 from nike_crawling_service.parser.Parser230514 import *
 from nike_crawling_service.util import HTMLUtil
 from nike_crawling_service.util import Properties
-from nike_crawling_service.util.EmailUtil import EmailUtil
+from nike_crawling_service.util import JSONUtil
+from nike_crawling_service.util.EmailUtil import *
+
 
 load_dotenv()
 
@@ -25,12 +27,12 @@ def get_product(year, month, day, recipients):
                 recipients_split = recipients.split(',')
                 for recipient in recipients_split:
                     email_util.send_email_result(recipient, result)
-            return json.dumps({'recipients': recipients,
-                               'year': year,
-                               'month': month,
-                               'day': day,
-                               'data': result},
-                              default=str)
+            dictionary = {
+                'recipients': recipients,
+                'date': f'{year}-{month}-{day}',
+                'data': result
+            }
+            return JSONUtil.make_json(dictionary)
     except (Exception,):
         email_util.send_error_email(admin_email, traceback.format_exc())
     return json.dumps({'data': 'Error'})

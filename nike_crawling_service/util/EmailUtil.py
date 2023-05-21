@@ -21,13 +21,13 @@ class EmailUtil:
 
     # noinspection PyMethodMayBeStatic
     def __make_success_plain(self, result):
-        send_count = len(result)
-        return f'Crawling Success!!!\nSend : {send_count}\n\n{result}'
+        count = len(result)
+        return f'Crawling Success!!!\nCount : {count}'
 
     # noinspection PyMethodMayBeStatic
     def __make_success_html(self, result):
+        count = len(result)
         lines = []
-
         for item in result:
             line = [f"<h3>{item['name']}</h3>",
                     f"Price : {item['price']}",
@@ -41,6 +41,8 @@ class EmailUtil:
         <html>
             <body>
                 <h2>Crawling Success!!!</h2>
+                <h4>Count : {count}
+                </br>
                 <a href='{Properties.snkrUrl}'>SNKRS로 이동</a>
                 </br></br>
                 {"</br></br>".join(lines)}

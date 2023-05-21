@@ -24,11 +24,12 @@ class Command(BaseCommand):
         month = date_split[1]
         day = date_split[2]
 
-        self.stdout.write(f'Start job.\n- year : {year}\n- month : {month}\n- day : {day}\n- recipients : {recipients}')
+        self.stdout.write(f'Start job.')
 
         result = get_product(year, month, day, recipients)
 
-        self.stdout.write(f'End job.\n{result}')
+        self.stdout.write(result)
+        self.stdout.write(f'End job.')
 
     def get_value(self, options, key, default):
         if options[key]:
