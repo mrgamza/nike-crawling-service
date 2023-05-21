@@ -13,17 +13,25 @@ def hello(request):
 
 
 def job(request):
-    now = datetime.now(timezone('Asia/Seoul'))
-
-    year = request.GET.get('year', now.year)
-    month = request.GET.get('month', now.month)
-    day = request.GET.get('day', now.day)
     recipients = request.GET.get('recipients', None)
 
     if recipients is None:
         return HttpResponse(json.dumps({"status": "required field not found"}),
                             content_type='application/json; charset=utf-8',
                             status=status.HTTP_400_BAD_REQUEST)
+
+    date = request.GET.get('date', None)
+
+    if date is None:
+        now = datetime.now(timezone('Asia/Seoul'))
+        year = now.year
+        month = now.month
+        day = now.day
+    else:
+        date_split = list(map(int, date.split("-")))
+        year = date_split[0]
+        month = date_split[1]
+        day = date_split[2]
 
     return HttpResponse(CrawlingController.get_product(year, month, day, recipients),
                         content_type='application/json; charset=utf-8')
