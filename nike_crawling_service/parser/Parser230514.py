@@ -77,4 +77,5 @@ class Parser230514:
         date_str = ' '.join(transform_text).replace('오전', 'AM').replace('오후', 'PM')
         date_time_obj = datetime.strptime(date_str, '%m/%d %p %I:%M')
         date_time_obj = date_time_obj.replace(year=datetime.now().year)
+        date_time_obj = date_time_obj.replace(hour=(date_time_obj.hour + 9))
         return date_time_obj
