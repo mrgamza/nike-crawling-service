@@ -28,4 +28,5 @@ python manage.py runserver
 |  Get   | http://localhost:8000/job        | Call List |             |
 
 # Example
-- http://localhost:8000/job/?recipients={YourEmail}&year=2023&month=7&day=7
+- http://localhost:8000/job/?recipients={YourEmail}
+- http://localhost:8000/job/?recipients={YourEmail}&date=2023-05-21
