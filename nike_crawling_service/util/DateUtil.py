@@ -7,3 +7,7 @@ def is_same_date(current, target):
 
 def is_same_time(current, target):
     return current.hour == target.hour and current.minute == target.minute
+
+
+def is_same_hour(current, target):
+    return current.hour == target.hour and current.minute == target.minute

@@ -21,6 +21,7 @@ def job(request):
                             status=status.HTTP_400_BAD_REQUEST)
 
     date = request.GET.get('date', None)
+    time = request.GET.get('time', None)
 
     if date is None:
         now = datetime.now(timezone('Asia/Seoul'))
@@ -33,5 +34,5 @@ def job(request):
         month = date_split[1]
         day = date_split[2]
 
-    return HttpResponse(CrawlingController.get_product(year, month, day, recipients),
+    return HttpResponse(CrawlingController.get_product(year, month, day, time, recipients),
                         content_type='application/json; charset=utf-8')

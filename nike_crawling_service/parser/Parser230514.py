@@ -8,7 +8,7 @@ __all__ = ['Parser230514']
 
 
 class Parser230514:
-    def parse(self, html, year, month, day):
+    def parse(self, html, year, month, day, time):
         timezone_kst = timezone(timedelta(hours=9))
         request_datetime_kst = datetime(int(year), int(month), int(day), 0, 0, 0, 0, tzinfo=timezone_kst)
 
@@ -37,7 +37,15 @@ class Parser230514:
                 date_time = self.__get_datetime(date_time_html.text)
                 is_same_date = DateUtil.is_same_date(request_datetime_kst, date_time)
 
+                if time is None:
+                    is_same_time = True
+                else:
+                    is_same_time = DateUtil.is_same_time(request_datetime_kst, date_time)
+
                 if is_same_date is False:
+                    continue
+
+                if is_same_time is False:
                     continue
 
                 results.append({

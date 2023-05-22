@@ -16,7 +16,7 @@ admin_email = os.environ.get("ADMIN_ID")
 email_util = EmailUtil()
 
 
-def get_product(year, month, day, recipients):
+def get_product(year, month, day, time, recipients):
     try:
         request = HTMLUtil.get_html(Properties.crawlingUrl)
         if request is None:
