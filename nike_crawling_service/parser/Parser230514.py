@@ -40,7 +40,7 @@ class Parser230514:
                 if time is None:
                     is_same_time = True
                 else:
-                    is_same_time = DateUtil.is_same_time(request_datetime_kst, date_time)
+                    is_same_time = DateUtil.is_same_hour(request_datetime_kst, date_time)
 
                 if is_same_date is False:
                     continue
