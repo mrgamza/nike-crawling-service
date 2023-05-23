@@ -21,7 +21,6 @@ class Parser230514:
 
         for product in products:
             draw_pdp = self.__get_draw_pdp(product)
-
             if draw_pdp is None:
                 continue
 
@@ -33,16 +32,13 @@ class Parser230514:
                 price = inner.find('div', attrs={'headline-5 pb6-sm fs14-sm fs16-md'}).text
                 date_time_html = inner.find('div', attrs={'available-date-component'})
                 date_time = self.__get_datetime(date_time_html.text)
+
                 is_same_date = DateUtil.is_same_date(request_datetime_kst, date_time)
-
-                if time is None:
-                    is_same_time = True
-                else:
-                    is_same_time = DateUtil.is_same_hour(request_datetime_kst, date_time)
-
                 if is_same_date is False:
                     continue
 
+                is_same_time = True if time is None else \
+                    DateUtil.is_same_hour(request_datetime_kst, date_time)
                 if is_same_time is False:
                     continue
 
