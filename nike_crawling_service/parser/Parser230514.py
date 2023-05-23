@@ -25,8 +25,6 @@ class Parser230514:
             if draw_pdp is None:
                 continue
 
-            is_draw = draw_pdp['draw']
-
             try:
                 soup = BeautifulSoup(draw_pdp['response'], 'html.parser')
                 inner = soup.find('div', attrs={'class': 'product-info ncss-col-sm-12 full'})
