@@ -10,7 +10,9 @@ __all__ = ['Parser230514']
 class Parser230514:
     def parse(self, html, year, month, day, time):
         timezone_kst = timezone(timedelta(hours=9))
-        request_datetime_kst = datetime(int(year), int(month), int(day), 0, 0, 0, 0, tzinfo=timezone_kst)
+        
+        time_int = 0 if time is None else int(time)
+        request_datetime_kst = datetime(int(year), int(month), int(day), time_int, 0, 0, 0, tzinfo=timezone_kst)
 
         html_text = html.text
         find = BeautifulSoup(html_text, 'html.parser').find('div', attrs={'data-qa': 'feed-container'})
@@ -20,7 +22,7 @@ class Parser230514:
         results = []
 
         for product in products:
-            draw_pdp = self.__get_draw_pdp(product)
+            draw_pdp = self.__get_pdp(product)
             if draw_pdp is None:
                 continue
 
@@ -29,11 +31,14 @@ class Parser230514:
                 inner = soup.find('div', attrs={'class': 'product-info ncss-col-sm-12 full'})
                 name = inner.find('h1', attrs={'class': 'headline-5 pb3-sm'}).text
                 description = inner.find('h2', attrs={'class': 'headline-1 pb3-sm'}).text
-                price = inner.find('div', attrs={'headline-5 pb6-sm fs14-sm fs16-md'}).text
-                date_time_html = inner.find('div', attrs={'available-date-component'})
-                date_time = self.__get_datetime(date_time_html.text)
-
-                is_same_date = DateUtil.is_same_date(request_datetime_kst, date_time)
+                price = inner.find('div', attrs={'class': 'headline-5 pb6-sm fs14-sm fs16-md'}).text
+                date_time_html = inner.find('div', attrs={'class': 'available-date-component'})
+                if date_time_html is None:
+                    is_same_date = False
+                else:
+                    date_time = self.__get_datetime(date_time_html.text)    
+                    is_same_date = DateUtil.is_same_date(request_datetime_kst, date_time)
+                
                 if is_same_date is False:
                     continue
 
@@ -54,7 +59,7 @@ class Parser230514:
         return results
 
     # noinspection PyMethodMayBeStatic
-    def __get_draw_pdp(self, product):
+    def __get_pdp(self, product):
         product_card_link = product.find('a', attrs={'data-qa': 'product-card-link'})
         if product_card_link is None:
             return None

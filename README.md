@@ -12,7 +12,9 @@ ADMIN_ID={Admin Email}
 
 # Using JOB
 ```commandline
-python3 manage.py start --recipients {email1,email2}
+python3 manage.py start --recipients "email1,email2"
+python3 manage.py start --recipients "email1,email2" --date "2020-05-25"
+python3 manage.py start --recipients "email1,email2" --date "2020-05-25" --time 10
 ```
 
 # Using Server
@@ -28,5 +30,6 @@ python manage.py runserver
 |  Get   | http://localhost:8000/job        | Call List |             |
 
 # Example
-- http://localhost:8000/job/?recipients={YourEmail}
-- http://localhost:8000/job/?recipients={YourEmail}&date=2023-05-21
+- http://localhost:8000/job/?recipients=test@email.com
+- http://localhost:8000/job/?recipients=test@email.com&date=2023-05-25
+- http://localhost:8000/job/?recipients=test@email.com&date=2023-05-25&time=10

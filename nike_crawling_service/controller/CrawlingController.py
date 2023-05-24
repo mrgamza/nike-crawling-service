@@ -22,7 +22,7 @@ def get_product(year, month, day, time, recipients):
         if request is None:
             email_util.send_error_email(admin_email, "Response Error")
         else:
-            result = Parser230514().parse(request, year, month, day)
+            result = Parser230514().parse(request, year, month, day, time)
             if recipients != '':
                 recipients_split = recipients.split(',')
                 for recipient in recipients_split:
@@ -30,6 +30,7 @@ def get_product(year, month, day, time, recipients):
             dictionary = {
                 'recipients': recipients,
                 'date': f'{year}-{month}-{day}',
+                'time': time,
                 'data': result
             }
             return JSONUtil.make_json(dictionary)

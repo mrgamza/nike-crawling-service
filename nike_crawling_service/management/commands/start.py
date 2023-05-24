@@ -6,8 +6,9 @@ from pytz import timezone
 
 class Command(BaseCommand):
     def add_arguments(self, parser):
-        parser.add_argument('--date', type=str)
         parser.add_argument('--recipients', type=str)
+        parser.add_argument('--date', type=str)
+        parser.add_argument('--time', type=str)
 
     def handle(self, *args, **options):
         recipients = self.get_value(options, 'recipients', None)
@@ -23,10 +24,12 @@ class Command(BaseCommand):
         year = date_split[0]
         month = date_split[1]
         day = date_split[2]
+        
+        time = self.get_value(options, 'time', None)
 
         self.stdout.write(f'Start job.')
 
-        result = get_product(year, month, day, recipients)
+        result = get_product(year, month, day, time, recipients)
 
         self.stdout.write(result)
         self.stdout.write(f'End job.')
