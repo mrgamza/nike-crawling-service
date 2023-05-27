@@ -1,4 +1,5 @@
 import traceback
+import json
 
 from bs4 import BeautifulSoup
 from nike_crawling_service.util import DateUtil
@@ -17,8 +18,8 @@ class Parser230514:
         request_datetime_kst = datetime(int(year), int(month), int(day), time_int, 0, 0, 0, tzinfo=timezone_kst)
 
         html_text = html.text
-        find = BeautifulSoup(html_text, 'html.parser').find('div', attrs={'data-qa': 'feed-container'})
-        main = find.find('main', attrs={'data-qa': 'upcoming-section'})
+        container = BeautifulSoup(html_text, 'html.parser').find('div', attrs={'data-qa': 'feed-container'})
+        main = container.find('main', attrs={'data-qa': 'upcoming-section'})
         products = main.find_all('figure')
 
         results = []
@@ -28,36 +29,18 @@ class Parser230514:
                 draw_pdp = self.__get_pdp(product)
                 if draw_pdp is None:
                     continue
-            
-                soup = BeautifulSoup(draw_pdp['response'], 'html.parser')
-                inner = soup.find('div', attrs={'class': 'product-info ncss-col-sm-12 full ta-sm-c'})
-                if inner is None:
-                    inner = soup.find('div', attrs={'class': 'product-info ncss-col-sm-12 full'})
-                    name = inner.find('h1', attrs={'class': 'headline-5 pb3-sm'}).text
-                    description = inner.find('h2', attrs={'class': 'headline-1 pb3-sm'}).text
-                    price = inner.find('div', attrs={'class': 'headline-5 pb6-sm fs14-sm fs16-md'}).text
-                else:
-                    name = inner.find('h1', attrs={'class': 'headline-5=small'}).text
-                    description = inner.find('h2', attrs={'class': 'headline-2'}).text
-                    price = inner.find('div', attrs={'class': 'headline-5 pb6-sm'}).text
                 
-                date_time_html = inner.find('div', attrs={'class': 'available-date-component'})
-                if date_time_html is None:
-                    date_time = draw_pdp['date_time']
-                    is_same_date = DateUtil.is_same_date(request_datetime_kst, date_time)
+                date_time = draw_pdp['datetime']
+                
+                if date_time is None:
+                    date_time = self.__get_datetime_for_list(product)
                     is_time_check = False
                 else:
-                    date_time = self.__get_datetime_pdp(date_time_html.text)
-                    is_same_date = DateUtil.is_same_date(request_datetime_kst, date_time)
                     is_time_check = True
                     
-                print("### Find product", index)
-                print("# Name : ", f'{name} - {description}')
-                print("# Link : ", draw_pdp['link'])
-                print("# Price : ", price)
-                print("# Date : ", date_time)
-                print("# Draw : ", draw_pdp['draw'])
-                
+                draw_pdp['datetime'] = date_time
+                    
+                is_same_date = DateUtil.is_same_date(request_datetime_kst, date_time)
                 if is_same_date is False:
                     continue
                 
@@ -70,13 +53,10 @@ class Parser230514:
                 if is_same_time is False:
                     continue
                 
-                results.append({
-                    'name': f'{name} - {description}',
-                    'link': draw_pdp['link'],
-                    'price': price,
-                    'date': date_time,
-                    "draw": draw_pdp['draw']
-                })
+                print("### Find product", index)
+                print(json.dumps(draw_pdp, indent=2, default=str))
+                
+                results.append(draw_pdp)
             except Exception as exception:
                 print("### Error product index", index)
                 print(traceback.format_exc())
@@ -94,35 +74,51 @@ class Parser230514:
         response_text = response.text
         find = response_text.find('Draw로 출시됩니다')
         is_draw = find != -1
-        date_time = self.__get_datetime_list(product)
+        
+        soup = BeautifulSoup(response_text, 'html.parser')
+        pdp = soup.find('div', attrs={'class': 'product-info ncss-col-sm-12 full ta-sm-c'})
+        if pdp is None:
+            pdp = soup.find('div', attrs={'class': 'product-info ncss-col-sm-12 full'})
+            name = pdp.find('h1', attrs={'class': 'headline-5 pb3-sm'}).text
+            description = pdp.find('h2', attrs={'class': 'headline-1 pb3-sm'}).text
+            price = pdp.find('div', attrs={'class': 'headline-5 pb6-sm fs14-sm fs16-md'}).text
+        else:
+            name = pdp.find('h1', attrs={'class': 'headline-5=small'}).text
+            description = pdp.find('h2', attrs={'class': 'headline-2'}).text
+            price = pdp.find('div', attrs={'class': 'headline-5 pb6-sm'}).text
+            
+        date_time_html = pdp.find('div', attrs={'class': 'available-date-component'})
+        if date_time_html is None:
+            date_time = None
+        else:
+            date_time = self.__get_datetime_for_pdp(date_time_html.text)
         
         return {
-            'response': response_text,
+            'name': name,
+            'description': description,
+            'price': price,
             'link': link,
-            'date_time': date_time,
+            'datetime': date_time,
             'draw': is_draw
         }
         
     # noinspection PyMethodMayBeStatic
-    def __get_datetime_list(self, product):
+    def __get_datetime_for_list(self, product):
         if product is None:
             return None
 
-        date_find = product.find('div', attrs={'class': 'product-card ncss-row mr0-sm ml0-sm'})
-        date_find = date_find.find('div', attrs={'class': 'ncss-col-sm-12 full'})
-        date_find = date_find.find('a', attrs={'class': 'card-link d-sm-b'})
-        date_find = date_find.find('div', attrs={'class': 'launch-time ta-sm-l d-sm-h d-md-b z10 mod-bg-grey pt6-sm pl6-sm'})
-        date_find = date_find.find('div', attrs={'class': 'launch-caption ta-sm-c'})
+        product_card = product.find('div', attrs={'class': 'product-card ncss-row mr0-sm ml0-sm'})
+        date_div = product_card.find('div',  attrs={'class': 'launch-caption ta-sm-c'}, recursive=True)
     
-        month = date_find.find('p', attrs={'class': 'headline-4'}).text.replace('월', '')
-        day = date_find.find('p', attrs={'class': 'headline-1'}).text.replace('일', '')
+        month = date_div.find('p', attrs={'class': 'headline-4'}).text.replace('월', '')
+        day = date_div.find('p', attrs={'class': 'headline-1'}).text.replace('일', '')
         date_time = datetime(datetime.now().year, int(month), int(day))
         
         return date_time
     
 
     # noinspection PyMethodMayBeStatic
-    def __get_datetime_pdp(self, date_text):
+    def __get_datetime_for_pdp(self, date_text):
         if date_text is None:
             return None
 

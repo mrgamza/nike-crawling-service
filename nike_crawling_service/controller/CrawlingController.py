@@ -35,5 +35,7 @@ def get_product(year, month, day, time, recipients):
             }
             return JSONUtil.make_json(dictionary)
     except (Exception,):
-        email_util.send_error_email(admin_email, traceback.format_exc())
+        traceback = traceback.format_exc()
+        print(traceback)
+        email_util.send_error_email(admin_email, traceback)
     return json.dumps({'data': 'Error'})

@@ -34,9 +34,10 @@ class EmailUtil:
         lines = []
         for item in result:
             line = [f"<h3>{item['name']}</h3>",
+                    f"<h4>{item['description']}</h4>",
                     f"Price : {item['price']}",
                     f"</br>",
-                    f"Date : {item['date']}",
+                    f"Date : {item['datetime']}",
                     f"</br>",
                     f"Draw : {item['draw']}",
                     f"</br>",
@@ -94,5 +95,4 @@ class EmailUtil:
         smtp_server.sendmail(self.email_id, recipient, msg.as_string())
         smtp_server.quit()
 
-        print('send email')
-        print(msg)
+        print('Email send success!!')
