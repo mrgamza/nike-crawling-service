@@ -1,11 +1,12 @@
 import traceback
-import json
 
 from bs4 import BeautifulSoup
 from nike_crawling_service.util import DateUtil
 from nike_crawling_service.util import HTMLUtil
 from nike_crawling_service.util import Properties
+from nike_crawling_service.model import Model
 from datetime import datetime, timedelta, timezone
+
 
 __all__ = ['Parser230514']
 
@@ -21,16 +22,19 @@ class Parser230514:
         container = BeautifulSoup(html_text, 'html.parser').find('div', attrs={'data-qa': 'feed-container'})
         main = container.find('main', attrs={'data-qa': 'upcoming-section'})
         products = main.find_all('figure')
+        length = len(products)
 
         results = []
 
         for index, product in enumerate(products):
             try:
+                print(f'### Check product ({index+1}/{length})')
+                
                 draw_pdp = self.__get_pdp(product)
                 if draw_pdp is None:
                     continue
                 
-                date_time = draw_pdp['datetime']
+                date_time = draw_pdp.date_time
                 
                 if date_time is None:
                     date_time = self.__get_datetime_for_list(product)
@@ -38,7 +42,7 @@ class Parser230514:
                 else:
                     is_time_check = True
                     
-                draw_pdp['datetime'] = date_time
+                draw_pdp.date_time = date_time
                     
                 is_same_date = DateUtil.is_same_date(request_datetime_kst, date_time)
                 if is_same_date is False:
@@ -52,9 +56,6 @@ class Parser230514:
                 
                 if is_same_time is False:
                     continue
-                
-                print("### Find product", index)
-                print(json.dumps(draw_pdp, indent=2, default=str))
                 
                 results.append(draw_pdp)
             except Exception as exception:
@@ -93,14 +94,7 @@ class Parser230514:
         else:
             date_time = self.__get_datetime_for_pdp(date_time_html.text)
         
-        return {
-            'name': name,
-            'description': description,
-            'price': price,
-            'link': link,
-            'datetime': date_time,
-            'draw': is_draw
-        }
+        return Model.PDP(name, description, price, link, date_time, is_draw)
         
     # noinspection PyMethodMayBeStatic
     def __get_datetime_for_list(self, product):
@@ -124,7 +118,6 @@ class Parser230514:
 
         transform_text = date_text.replace("출시", "").split(' ')[0: 3]
         date_str = ' '.join(transform_text).replace('오전', 'AM').replace('오후', 'PM')
-        timezone_kst = timezone(timedelta(hours=9))
         date_time_obj = datetime.strptime(date_str, '%m/%d %p %I:%M')
         date_time_obj = date_time_obj.replace(year=datetime.now().year,
                                               hour=(date_time_obj.hour + 9))

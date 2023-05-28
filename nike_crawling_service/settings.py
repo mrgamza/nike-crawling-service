@@ -131,3 +131,7 @@ STATICFILES_DIR = [
 ]
 
 STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
+
+SECURE_SSL_REDIRECT = False
+
+APPEND_SLASH = False

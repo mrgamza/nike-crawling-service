@@ -31,11 +31,11 @@ def get_product(year, month, day, time, recipients):
                 'recipients': recipients,
                 'date': f'{year}-{month}-{day}',
                 'time': time,
-                'data': result
+                'data': list(map(lambda x: x.__dict__, result))
             }
             return JSONUtil.make_json(dictionary)
     except (Exception,):
-        traceback = traceback.format_exc()
-        print(traceback)
-        email_util.send_error_email(admin_email, traceback)
+        trace = traceback.format_exc()
+        print(trace)
+        email_util.send_error_email(admin_email, trace)
     return json.dumps({'data': 'Error'})

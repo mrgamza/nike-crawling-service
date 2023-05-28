@@ -19,5 +19,5 @@ from . import views
 
 urlpatterns = [
     path('', views.hello),
-    path('job/', views.job),
+    path('job', views.job),
 ]

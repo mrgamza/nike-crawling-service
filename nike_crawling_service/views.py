@@ -35,4 +35,5 @@ def job(request):
         day = date_split[2]
 
     return HttpResponse(CrawlingController.get_product(year, month, day, time, recipients),
-                        content_type='application/json; charset=utf-8')
+                        content_type='application/json; charset=utf-8',
+                        status=status.HTTP_200_OK)

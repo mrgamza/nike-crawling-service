@@ -22,26 +22,26 @@ class EmailUtil:
     # noinspection PyMethodMayBeStatic
     def __make_success_plain(self, result):
         count = len(result)
-        draw_count = len(list(filter(lambda x: x['draw'] is True, result)))
+        draw_count = len(list(filter(lambda x: x.draw is True, result)))
         normal_count = count - draw_count
         return f'Count : Draw {draw_count}, Normal {normal_count}'
 
     # noinspection PyMethodMayBeStatic
     def __make_success_html(self, result):
         count = len(result)
-        draw_count = len(list(filter(lambda x: x['draw'] is True, result)))
+        draw_count = len(list(filter(lambda x: x.draw is True, result)))
         normal_count = count - draw_count
         lines = []
         for item in result:
-            line = [f"<h3>{item['name']}</h3>",
-                    f"<h4>{item['description']}</h4>",
-                    f"Price : {item['price']}",
+            line = [f"<h3>{item.name}</h3>",
+                    f"<h4>{item.description}</h4>",
+                    f"Price : {item.price}",
                     f"</br>",
-                    f"Date : {item['datetime']}",
+                    f"Date : {item.date_time}",
                     f"</br>",
-                    f"Draw : {item['draw']}",
+                    f"Draw : {item.draw}",
                     f"</br>",
-                    f"<a href='{item['link']}'>Link로 이동</a>"]
+                    f"<a href='{item.link}'>Link로 이동</a>"]
             lines.append("".join(line))
 
         return f'''
