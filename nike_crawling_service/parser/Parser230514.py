@@ -13,7 +13,7 @@ __all__ = ['Parser230514']
 
 class Parser230514:
     def parse(self, html, year, month, day, time):
-        timezone_kst = timezone(timedelta(hours=9))
+        timezone_kst = timezone('Asia/Seoul')
         
         time_int = int(time) if time else 0
         request_datetime_kst = datetime(int(year), int(month), int(day), time_int, 0, 0, 0, tzinfo=timezone_kst)
