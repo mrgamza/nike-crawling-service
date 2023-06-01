@@ -5,7 +5,8 @@ from nike_crawling_service.util import DateUtil
 from nike_crawling_service.util import HTMLUtil
 from nike_crawling_service.util import Properties
 from nike_crawling_service.model import Model
-from datetime import datetime, timedelta, timezone
+from datetime import datetime
+from pytz import timezone, utc
 
 
 __all__ = ['Parser230514']
@@ -13,10 +14,8 @@ __all__ = ['Parser230514']
 
 class Parser230514:
     def parse(self, html, year, month, day, time):
-        timezone_kst = timezone('Asia/Seoul')
-        
         time_int = int(time) if time else 0
-        request_datetime_kst = datetime(int(year), int(month), int(day), time_int, 0, 0, 0, tzinfo=timezone_kst)
+        request_datetime_kst = datetime(int(year), int(month), int(day), time_int, 0, 0, 0, tzinfo=timezone('Asia/Seoul'))
         
         html_text = html.text
         container = BeautifulSoup(html_text, 'html.parser').find('div', attrs={'data-qa': 'feed-container'})
