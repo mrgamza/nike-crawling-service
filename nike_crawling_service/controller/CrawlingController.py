@@ -3,7 +3,7 @@ import os
 import traceback
 
 from dotenv import load_dotenv
-from nike_crawling_service.parser.Parser230514 import *
+from nike_crawling_service.parser.Parser import *
 from nike_crawling_service.util import HTMLUtil
 from nike_crawling_service.util import Properties
 from nike_crawling_service.util import JSONUtil
@@ -22,7 +22,7 @@ def get_product(year, month, day, time, recipients):
         if request is None:
             email_util.send_error_email(admin_email, "Response Error")
         else:
-            result = Parser230514().parse(request, year, month, day, time)
+            result = Parser().parse(request, year, month, day, time)
             if recipients != '':
                 recipients_split = recipients.split(',')
                 for recipient in recipients_split:
