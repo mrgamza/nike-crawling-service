@@ -1,6 +1,3 @@
-__all__ = ['DateUtil']
-
-
 def is_same_date(current, target):
     return current.year == target.year and current.month == target.month and current.day == target.day
 

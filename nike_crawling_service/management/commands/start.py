@@ -1,8 +1,8 @@
 from django.core.management.base import BaseCommand
-from nike_crawling_service.controller.CrawlingController import get_product
 from datetime import datetime
 from pytz import timezone
 
+from nike_crawling_service.controller import CrawlingController
 
 class Command(BaseCommand):
     def add_arguments(self, parser):
@@ -29,7 +29,7 @@ class Command(BaseCommand):
 
         self.stdout.write(f'Start job.')
 
-        result = get_product(year, month, day, time, recipients)
+        result = CrawlingController.get_product(year, month, day, time, recipients)
 
         self.stdout.write(result)
         self.stdout.write(f'End job.')

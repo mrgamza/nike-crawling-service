@@ -1,98 +1,65 @@
 import os
 import smtplib
 
+from dotenv import load_dotenv
+from django.template.loader import render_to_string
+
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from dotenv import load_dotenv
 
 from nike_crawling_service.util import Properties
 
+load_dotenv()
 
-__all__ = ['EmailUtil']
+
+def send_error_email(recipient, reason):
+    plain = f'Crawling Fail!!!\n\n{reason}'
+    html = render_to_string('fail.html', {
+        'snkr_url': Properties.snkrUrl, 
+        'reason': reason
+    })
+    
+    __send_email(recipient, plain, html)
 
 
-class EmailUtil:
+def send_success_email(recipient, result):
+    count = len(result)
+    draw_count = len(list(filter(lambda x: x['draw'] is True, result)))
+    normal_count = count - draw_count
+    
+    plain = f'Count : Draw {draw_count}, Normal {normal_count}'
+    html = render_to_string('success.html', {
+        'draw_count': draw_count,
+        'normal_count': normal_count,
+        'snkr_url': Properties.snkrUrl, 
+        'items': result
+    })
+    
+    __send_email(recipient, plain, html)
 
-    load_dotenv()
 
+def __send_email(recipient, plain, html):
     email_id = os.environ.get('EMAIL_ID')
     email_password = os.environ.get('EMAIL_PASSWORD')
     email_username = os.environ.get('EMAIL_USERNAME')
+    
+    msg = MIMEMultipart('alternative')
+    msg['Subject'] = 'Nike SNKRS Crawling'
+    msg['From'] = f'{email_username} <{email_id}>'
+    msg['To'] = recipient
 
-    # noinspection PyMethodMayBeStatic
-    def __make_success_plain(self, result):
-        count = len(result)
-        draw_count = len(list(filter(lambda x: x.draw is True, result)))
-        normal_count = count - draw_count
-        return f'Count : Draw {draw_count}, Normal {normal_count}'
+    msg.attach(MIMEText(plain, 'plain'))
+    msg.attach(MIMEText(html, 'html'))
 
-    # noinspection PyMethodMayBeStatic
-    def __make_success_html(self, result):
-        count = len(result)
-        draw_count = len(list(filter(lambda x: x.draw is True, result)))
-        normal_count = count - draw_count
-        lines = []
-        for item in result:
-            line = [f"<h3>{item.name}</h3>",
-                    f"<h4>{item.description}</h4>",
-                    f"Price : {item.price}",
-                    f"</br>",
-                    f"Date : {item.date_time}",
-                    f"</br>",
-                    f"Draw : {item.draw}",
-                    f"</br>",
-                    f"<a href='{item.link}'>Link로 이동</a>"]
-            lines.append("".join(line))
+    smtp_server = smtplib.SMTP('smtp.gmail.com', 587)
+    smtp_server.starttls()
+    smtp_server.login(email_id, email_password)
+    smtp_server.sendmail(email_id, recipient, msg.as_string())
+    smtp_server.quit()
 
-        return f'''
-        <html>
-            <body>
-                <h2>Crawling Success!!!</h2>
-                <h4>Count : Draw {draw_count}, Normal {normal_count}
-                </br>
-                <a href='{Properties.snkrUrl}'>SNKRS로 이동</a>
-                </br></br>
-                {"</br></br>".join(lines)}
-            </body>
-        </html>
-        '''
-
-    # noinspection PyMethodMayBeStatic
-    def send_error_email(self, recipient, reason):
-        plain = f'Crawling Fail!!!\n\n{reason}'
-        html = f'''
-        <html>
-            <body>
-                <h2>Crawling Fail!!!</h2>
-                <a href='{Properties.snkrUrl}'>SNKRS로 이동</a>
-                </br></br>
-                <h3>Reason</h3>
-                <p>{reason}</p>
-            </body>
-        </html>
-        '''
-        self.send_email(recipient, plain, html)
-
-    # noinspection PyMethodMayBeStatic
-    def send_email_result(self, recipient: str, result: str):
-        plain = self.__make_success_plain(result)
-        html = self.__make_success_html(result)
-        self.send_email(recipient, plain, html)
-
-    # noinspection PyMethodMayBeStatic
-    def send_email(self, recipient: str, plain: str, html: str):
-        msg = MIMEMultipart('alternative')
-        msg['Subject'] = 'Nike SNKRS Crawling'
-        msg['From'] = f'{self.email_username} <{self.email_id}>'
-        msg['To'] = recipient
-
-        msg.attach(MIMEText(plain, 'plain'))
-        msg.attach(MIMEText(html, 'html'))
-
-        smtp_server = smtplib.SMTP('smtp.gmail.com', 587)
-        smtp_server.starttls()
-        smtp_server.login(self.email_id, self.email_password)
-        smtp_server.sendmail(self.email_id, recipient, msg.as_string())
-        smtp_server.quit()
-
-        print('Email send success!!')
+    print()
+    print('# Email send!!')
+    print('# Subject :', msg['Subject'])
+    print('# From :', msg['From'])
+    print('# To :', msg['To'])
+    print()

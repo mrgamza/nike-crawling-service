@@ -1,5 +1,3 @@
-__all__ = ['Model']
-
 class PDP(object):
     def __init__(self, name, description, price, link, date_time, draw):
         self.name = name
