@@ -1,5 +1,6 @@
 import os
 import traceback
+import logging
 
 from dotenv import load_dotenv
 
@@ -11,25 +12,33 @@ from nike_crawling_service.util import EmailUtil
 from nike_crawling_service.parser import Parser
 
 
+logger = logging.getLogger('default')
+
+
 def get_product(year, month, day, time, recipients):
     load_dotenv()
     admin_email = os.environ.get("ADMIN_ID")
     
     try:
-        request = HTMLUtil.get_html(Properties.crawlingUrl)
-        if request is None:
-            EmailUtil.send_error_email(admin_email, "Response Error")
-        else:
-            result = Parser.parse(request, year, month, day, time)
+        snkr_response = HTMLUtil.get_html(Properties.crawlingUrl)
+        if snkr_response:
+            result = Parser.parse(snkr_response, year, month, day, time)
             data = list(map(lambda x: x.__dict__, result))
-            if recipients:
-                recipients_split = recipients.split(',')
-                for recipient in recipients_split:
-                    EmailUtil.send_success_email(recipient, data)
+            
+            EmailUtil.send_success_email(recipients, data)
             response = HTTPUtil.make_response('0000', 'success', data)
+            
+            logger.info('Success get product')
+        else:
+            EmailUtil.send_error_email(admin_email, "Response Error")
+            response = HTTPUtil.make_response('1000', 'SNKR site response is none', None)
+            
+            logger.error('SNKR site response is none')
     except (Exception,):
         trace = traceback.format_exc()
+        
         EmailUtil.send_error_email(admin_email, trace)
-        print(trace)
         response = HTTPUtil.make_response('1000', trace, None)
+        
+        logger.error(trace)
     return JSONUtil.make_json(response)

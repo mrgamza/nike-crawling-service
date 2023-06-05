@@ -5,17 +5,17 @@
         </br>
         <a href='{{ snkr_url }}'>SNKRS로 이동</a>
         {% for item in items %}
-        </br>
-        </br>
-        <h3>{{ item.name }}</h3>
-        <h4>{{ item.description }}</h4>
-        Price : {{ item.price }}
-        </br>
-        Date : {{ item.date_time }}
-        </br>
-        Draw : {{ item.draw }}
-        </br>
-        <a href='{{ item.link }}'>Link로 이동</a>
+            </br>
+            </br>
+            <h3>{{ item.name }}</h3>
+            <h4>{{ item.description }}</h4>
+            Price : {{ item.price }}
+            </br>
+            Date : {{ item.date_time }}
+            </br>
+            Draw : {{ item.draw }}
+            </br>
+            <a href='{{ item.link }}'>Link로 이동</a>
         {% endfor %}
     </body>
 </html>

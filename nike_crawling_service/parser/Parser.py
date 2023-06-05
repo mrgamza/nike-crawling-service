@@ -1,4 +1,5 @@
 import traceback
+import logging
 
 from bs4 import BeautifulSoup
 from datetime import datetime
@@ -8,6 +9,10 @@ from nike_crawling_service.util import DateUtil
 from nike_crawling_service.util import HTMLUtil
 from nike_crawling_service.util import Properties
 from nike_crawling_service.model.Model import PDP
+
+
+console = logging.getLogger('console')
+logger = logging.getLogger('default')
 
 
 def parse(html, year, month, day, time):
@@ -26,7 +31,7 @@ def parse(html, year, month, day, time):
 
     for index, product in enumerate(products):
         try:
-            print(f'### Check product ({index+1}/{length})')
+            console.info(f'Check product ({index+1}/{length})')
             
             draw_pdp = __get_pdp(product)
             if not draw_pdp:
@@ -53,8 +58,8 @@ def parse(html, year, month, day, time):
             
             results.append(draw_pdp)
         except Exception as exception:
-            print("### Error product index", index)
-            print(traceback.format_exc())
+            logger.error('Error product index', index)
+            logger.error(traceback.format_exc())
             raise exception
     return results
 

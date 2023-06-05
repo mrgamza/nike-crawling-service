@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = '_tau2&8c-($p8+9vgu1ohc#odeu%+4tcz#@rjw9@7j^t5&50-('
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -135,3 +135,55 @@ STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 SECURE_SSL_REDIRECT = False
 
 APPEND_SLASH = False
+
+ADMINS = [
+    ('bear', 'mrgamza@kakao.com'),
+]
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
+    'formatters': {
+        'normal': {
+            'format' : "[%(asctime)s](%(name)s)[%(levelname)s][%(filename)s:%(lineno)s] %(message)s",
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            "formatter": "normal",
+        },
+        'file': {
+            'level': 'DEBUG',
+            'encoding': 'utf-8',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': BASE_DIR/'logs/logs.log',
+            'maxBytes': 1024*1024*15,
+            'backupCount': 5,
+            "formatter": "normal",
+        },
+        "mail_admins": {
+            "level": "ERROR",
+            "class": "django.utils.log.AdminEmailHandler",
+        },
+    },
+    'loggers': {
+        'default': {
+            'handlers':['console', 'file'],  
+            'level':'DEBUG',
+        },
+        'console': {
+            'handlers':['console'],  
+            'level':'DEBUG',
+        }
+    },
+}

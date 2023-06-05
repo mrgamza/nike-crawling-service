@@ -1,8 +1,13 @@
+import logging
+
 from django.core.management.base import BaseCommand
 from datetime import datetime
 from pytz import timezone
 
 from nike_crawling_service.controller import CrawlingController
+
+console = logging.getLogger('console')
+
 
 class Command(BaseCommand):
     def add_arguments(self, parser):
@@ -14,7 +19,7 @@ class Command(BaseCommand):
         recipients = self.get_value(options, 'recipients', None)
 
         if recipients is None:
-            print({"status": "required field not found"})
+            console.info('required field not found')
             return None
 
         now = datetime.now(timezone('Asia/Seoul'))
@@ -27,12 +32,14 @@ class Command(BaseCommand):
         
         time = self.get_value(options, 'time', None)
 
-        self.stdout.write(f'Start job.')
+        console.info('Start job.')
 
         result = CrawlingController.get_product(year, month, day, time, recipients)
 
+        console.info('End job.')
+        
+        self.stdout.write()
         self.stdout.write(result)
-        self.stdout.write(f'End job.')
 
     def get_value(self, options, key, default):
         if options[key]:
