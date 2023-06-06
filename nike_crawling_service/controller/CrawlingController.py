@@ -11,6 +11,8 @@ from nike_crawling_service.util import HTTPUtil
 from nike_crawling_service.util import EmailUtil
 from nike_crawling_service.parser import Parser
 
+from nike_crawling_service.constant.ErrorCode import ErrorCode
+
 
 logger = logging.getLogger('default')
 
@@ -26,19 +28,19 @@ def get_product(year, month, day, time, recipients):
             data = list(map(lambda x: x.__dict__, result))
             
             EmailUtil.send_success_email(recipients, data)
-            response = HTTPUtil.make_response('0000', 'success', data)
+            response = HTTPUtil.make_response(ErrorCode.SUCCESS, 'success', data)
             
             logger.info('Success get product')
         else:
             EmailUtil.send_error_email(admin_email, "Response Error")
-            response = HTTPUtil.make_response('1000', 'SNKR site response is none', None)
+            response = HTTPUtil.make_response(ErrorCode.RESPONSE_ERROR, 'SNKR site response is none', None)
             
             logger.error('SNKR site response is none')
     except (Exception,):
         trace = traceback.format_exc()
         
         EmailUtil.send_error_email(admin_email, trace)
-        response = HTTPUtil.make_response('1000', trace, None)
+        response = HTTPUtil.make_response(ErrorCode.KNOWN_ERROR, trace, None)
         
         logger.error(trace)
     return JSONUtil.make_json(response)
