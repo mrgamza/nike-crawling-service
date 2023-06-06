@@ -58,7 +58,7 @@ def parse(html, year, month, day, time):
             
             results.append(draw_pdp)
         except Exception as exception:
-            logger.error('Error product index', index)
+            logger.error(f'Error product index : {index}')
             logger.error(traceback.format_exc())
             raise exception
     return results
