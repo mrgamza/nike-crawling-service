@@ -76,9 +76,13 @@ def __get_pdp(product):
     product_card_link = product.find('a', attrs={'data-qa': 'product-card-link'})
     if not product_card_link:
         return None
+    
+    product_link = product_card_link.attrs["href"]
+    product_link = product_link.replace('/kr', '')
 
-    link = Properties.detailPrefixUrl + product_card_link.attrs["href"]
+    link = Properties.detailPrefixUrl + product_link
     response = HTMLUtil.get_html(link)
+    logger.debug(link)
     response_text = response.text
     find = response_text.find('Draw로 출시됩니다')
     is_draw = find != -1
