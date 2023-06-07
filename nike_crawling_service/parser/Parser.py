@@ -82,7 +82,6 @@ def __get_pdp(product):
 
     link = Properties.detailPrefixUrl + product_link
     response = HTMLUtil.get_html(link)
-    logger.debug(link)
     response_text = response.text
     find = response_text.find('Draw로 출시됩니다')
     is_draw = find != -1
