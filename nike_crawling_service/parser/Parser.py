@@ -81,12 +81,12 @@ def __get_pdp(product):
     product_link = product_link.replace('/kr', '')
 
     link = Properties.detailPrefixUrl + product_link
-    response = HTMLUtil.get_html(link)
-    response_text = response.text
-    find = response_text.find('Draw로 출시됩니다')
-    is_draw = find != -1
+    html = HTMLUtil.get_html(link)
+    html_text = html.text
+    find_html = html_text.find('Draw로 출시됩니다')
+    is_draw = find_html != -1
     
-    soup = BeautifulSoup(response_text, 'html.parser')
+    soup = BeautifulSoup(html_text, 'html.parser')
     pdp = soup.find('div', attrs={'class': 'product-info ncss-col-sm-12 full ta-sm-c'})
     if not pdp:
         pdp = soup.find('div', attrs={'class': 'product-info ncss-col-sm-12 full'})
