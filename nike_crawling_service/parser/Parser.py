@@ -33,13 +33,13 @@ def parse(html, year, month, day, time):
         try:
             console.info(f'Check product ({index+1}/{length})')
             
-            draw_pdp = __get_pdp(product)
-            if not draw_pdp:
+            product_detail = __get_product_detail(product)
+            if not product_detail:
                 continue
             
-            draw_pdp, can_time_check = __set_datetime_for_list(draw_pdp, product)
+            product_detail, can_time_check = __set_datetime_for_list(product_detail, product)
             
-            date_time = draw_pdp.date_time
+            date_time = product_detail.date_time
             if not date_time:
                 continue
                 
@@ -56,7 +56,7 @@ def parse(html, year, month, day, time):
             if not is_same_time:
                 continue
             
-            results.append(draw_pdp)
+            results.append(product_detail)
         except Exception as exception:
             logger.error(f'Error product index : {index}')
             logger.error(traceback.format_exc())
@@ -72,7 +72,7 @@ def __set_datetime_for_list(pdp, product):
         
     return pdp, can_time_check
 
-def __get_pdp(product):
+def __get_product_detail(product):
     product_card_link = product.find('a', attrs={'data-qa': 'product-card-link'})
     if not product_card_link:
         return None
