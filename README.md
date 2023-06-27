@@ -26,7 +26,7 @@ python3 manage.py start --recipients "email1,email2" --date "2020-05-25" --time 
 # Using Server
 Run django server
 ```commandline
-python manage.py runserver
+python3 manage.py runserver
 ```
 
 # EndPoints
